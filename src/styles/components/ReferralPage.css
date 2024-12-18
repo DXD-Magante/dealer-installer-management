@@ -1,0 +1,198 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f6f8; /* Softer background for better contrast */
+    padding: 20px;
+    min-height: 100vh; /* Ensure full screen height */
+  }
+  
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333333;
+    margin-bottom: 15px;
+  }
+  
+  .referral-container {
+    border: 2px dashed #0056d2; /* Dashed border for emphasis */
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    background-color: #ffffff;
+    width: 90%; /* More fluid design for smaller screens */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Slightly deeper shadow for contrast */
+    text-align: center;
+  }
+  
+  .referral-text {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0056d2;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+  
+  .actions-container {
+    display: flex;
+    flex-wrap: wrap; /* Wrap buttons for smaller screens */
+    justify-content: center;
+    gap: 15px; /* Spacing between buttons */
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .action-button {
+    padding: 12px 20px;
+    border-radius: 10px;
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .action-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05); /* Subtle hover effect */
+  }
+  
+  .share-button {
+    background-color: #007bff;
+  }
+  
+  .share-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .qr-code-container {
+    margin: 20px 0;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .qr-code-container h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 10px;
+  }
+  
+  .rewards-container {
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #e3fcef;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+  }
+  
+  .rewards-container h3 {
+    font-size: 20px;
+    color: #388e3c;
+    font-weight: bold;
+  }
+  
+  .rewards-container p {
+    font-size: 16px;
+    color: #2e7d32;
+  }
+  
+  .referrals-history {
+    width: 90%;
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .referrals-history h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 10px;
+  }
+  
+  .referrals-history ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .referrals-history li {
+    font-size: 14px;
+    color: #555555;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .referrals-history li:last-child {
+    border-bottom: none;
+  }
+  
+  @media (max-width: 600px) {
+    .referral-container, .rewards-container, .referrals-history {
+      width: 100%;
+    }
+  
+    .action-button {
+      padding: 10px;
+      font-size: 14px;
+    }
+  }
+
+  .qr-code-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    max-width: 90%;
+    width: 400px;
+  }
+  
+  .modal-content h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+  }
+  
+  .close-button:hover {
+    color: #333;
+  }
+  
