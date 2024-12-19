@@ -13,6 +13,15 @@ const ProductPage = () => {
   const [formData, setFormData] = useState({});
   const [orderNo, setOrderNo] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [clientName, setClientName] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientCity, setClientCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [selectedProductType, setSelectedProductType] = useState('');
+  const [width, setWidth] = useState('');
+  const [height, setHeight] = useState('');
+  const [additionalReq, setAdditionalReq] = useState('');
   const itemsPerPage = 8; // Number of products per page
 
   const quotationRef = useRef(null); // Create a reference for the Quotation Summary section
@@ -67,50 +76,41 @@ const ProductPage = () => {
 
   const handleSubmitProductForm = async (productId) => {
     const productData = formData[productId];
-    if (
-      !productData ||
-      !productData.height ||
-      !productData.width ||
-      !formData.clientName ||
-      !formData.clientEmail ||
-      !formData.clientPhone ||
-      !formData.city ||
-      !formData.postalCode
-    ) {
-      alert("Please fill out all required fields.");
-      return;
-    }
+    
   
-    // Generate a unique 6-digit order number
-    const orderNumber = Math.floor(100000 + Math.random() * 900000);
+    
+   
+  
+    // Ensure clientName is a string.
+    const formattedClientName = typeof clientName === 'string' ? clientName : clientName?.a;
   
     // Prepare data for Firebase
     const dataToSubmit = {
-      clientName: formData.clientName,
-      clientPhone: formData.clientPhone,
-      clientEmail: formData.clientEmail,
-      city: formData.city,
-      postalCode: formData.postalCode,
+      clientName: clientName || "Unknown", // Ensure the clientName is always a string
+      clientPhone: clientPhone,
+      clientEmail: clientEmail,
+      city: clientCity,
+      postalCode: postalCode,
       product: {
         productName: cart.find((item) => item.id === productId)?.name || "Unknown",
-        height: productData.height,
-        width: productData.width,
-        additionalRequirements: productData.additionalRequirements || "",
+        height: height,
+        width: width,
+        additionalRequirements: additionalReq|| "",
       },
       userId: auth.currentUser?.uid || "Anonymous",
-      orderNumber,
+      orderNumber: Math.floor(100000 + Math.random() * 900000),
       timestamp: new Date().toISOString(),
     };
   
     try {
       // Save to Firebase
       const quotationRef = collection(db, "Quotation_form");
-      await setDoc(doc(quotationRef, String(orderNumber)), dataToSubmit);
+      await setDoc(doc(quotationRef, String(dataToSubmit.orderNumber)), dataToSubmit);
   
-      alert(`Quotation submitted successfully! Order Number: ${orderNumber}`);
+      alert(`Quotation submitted successfully! Order Number: ${dataToSubmit.orderNumber}`);
     } catch (error) {
       console.error("Error submitting quotation:", error);
-      alert("Failed to submit quotation. Please try again.");
+      alert(error);
       return;
     }
   
@@ -263,7 +263,8 @@ const ProductPage = () => {
                 <input
                   type="text"
                   required
-                  onChange={(e) => handleFormChange("clientName", e.target.value)}
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
                 />
               </label>
               <label>
@@ -271,7 +272,8 @@ const ProductPage = () => {
                 <input
                   type="email"
                   required
-                  onChange={(e) => handleFormChange("clientEmail", e.target.value)}
+                  value={clientEmail}
+                  onChange={(e) => setClientEmail( e.target.value)}
                 />
               </label>
               <label>
@@ -279,7 +281,8 @@ const ProductPage = () => {
                 <input
                   type="tel"
                   required
-                  onChange={(e) => handleFormChange("clientPhone", e.target.value)}
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
                 />
               </label>
               <label>
@@ -287,7 +290,8 @@ const ProductPage = () => {
                 <input
                   type="text"
                   required
-                  onChange={(e) => handleFormChange("city", e.target.value)}
+                  value={clientCity}
+                  onChange={(e) => setClientCity(e.target.value)}
                 />
               </label>
               <label>
@@ -295,7 +299,8 @@ const ProductPage = () => {
                 <input
                   type="text"
                   required
-                  onChange={(e) => handleFormChange("postalCode", e.target.value)}
+                  value={postalCode}
+                  onChange={(e) => setPostalCode( e.target.value)}
                 />
               </label>
             </div>
@@ -309,35 +314,36 @@ const ProductPage = () => {
                 <div className="product-form">
                   <label>
                     Selected Product:
-                    <input type="text" value={cart[activeTab]?.name} readOnly />
+                    <input type="text" value={cart[activeTab]?.name} readOnly/>
                   </label>
                   <label>
                     Height (ft):
                     <input
                       type="number"
                       required
+                      value={height}
                       onChange={(e) =>
-                        handleFormChange(cart[activeTab]?.id, "height", e.target.value)
+                        setHeight( e.target.value)
                       }
                     />
                   </label>
                   <label>
-                    Width (ft):
+                    Width (ft):{width}
                     <input
                       type="number"
                       required
+                      value={width}
                       onChange={(e) =>
-                        handleFormChange(cart[activeTab]?.id, "width", e.target.value)
+                        setWidth( e.target.value)
                       }
                     />
                   </label>
                   <label>
                     Additional Requirements:
                     <textarea
+                        value={additionalReq}
                       onChange={(e) =>
-                        handleFormChange(
-                          cart[activeTab]?.id,
-                          "additionalRequirements",
+                        setAdditionalReq(
                           e.target.value
                         )
                       }
