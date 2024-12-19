@@ -11,6 +11,7 @@ import { auth, db } from "./services/firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import './App.css';
+import ProductPage from "./pages/ProductPage.js";
 
 
 const Navbar = ({userRole, handleLogout}) => {
@@ -57,7 +58,7 @@ const Navbar = ({userRole, handleLogout}) => {
             <li className="navbar-item"><Link to="">Quotations</Link></li>
             <li className="navbar-item"><Link to="/referral">Referral</Link></li>
             <li className="navbar-item"><Link to="">Earnings</Link></li>
-            <li className="navbar-item"><Link to="">Products</Link></li>
+            <li className="navbar-item"><Link to="/products">Products</Link></li>
             <li className="navbar-item"><Link to="">Profile</Link></li>
           </>
         )}
@@ -171,6 +172,7 @@ function App() {
             <Route path="/dealer-dashboard" element={<DealerDashboard />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/referral" element={<ReferralPage/>}/>
+            <Route path="/Products" element={<ProductPage/>}/>
           </>
         )}
         {userRole === "Installer" && (
