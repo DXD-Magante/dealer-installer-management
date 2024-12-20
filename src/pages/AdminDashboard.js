@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../services/firebase";
-import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import "../styles/components/AdminDashboard.css";
@@ -13,7 +13,7 @@ const AdminDashboard = () => {
   const [reports, setReports] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,42 +22,51 @@ const AdminDashboard = () => {
     } else {
       const fetchAdminData = async () => {
         try {
-          // Fetch Quotations
-          const quotationsSnapshot = await getDocs(collection(db, "quotations"));
-          setQuotations(quotationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          // Fetch Quotations from Quotation_form
+          const quotationsSnapshot = await getDocs(collection(db, "Quotation_form"));
+          const quotationsData = quotationsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setQuotations(quotationsData);
 
           // Fetch Orders
           const ordersSnapshot = await getDocs(collection(db, "orders"));
-          setOrders(ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          setOrders(
+            ordersSnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+          );
 
-          // Fetch Dealers
-          const dealersSnapshot = await getDocs(collection(db, "dealers"));
-          setDealers(dealersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          // Fetch Dealers from "users" Collection
+          const dealersSnapshot = await getDocs(collection(db, "users"));
+          setDealers(
+            dealersSnapshot.docs
+              .filter((doc) => doc.data().role === "Dealer")
+              .map((doc) => ({ id: doc.id, ...doc.data() }))
+          );
 
-          // Fetch Installers
-          const installersSnapshot = await getDocs(collection(db, "installers"));
-          setInstallers(installersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          // Fetch Installers from "users" Collection
+          const installersSnapshot = await getDocs(collection(db, "users"));
+          setInstallers(
+            installersSnapshot.docs
+              .filter((doc) => doc.data().role === "Installer")
+              .map((doc) => ({ id: doc.id, ...doc.data() }))
+          );
 
-          // Generate Reports
+          // Generate Reports for Orders
           const reportData = {
             totalOrders: ordersSnapshot.docs.length,
-            completedOrders: ordersSnapshot.docs.filter(doc => doc.data().status === "Completed").length,
-            pendingOrders: ordersSnapshot.docs.filter(doc => doc.data().status === "Pending").length,
-            approvedOrders: ordersSnapshot.docs.filter(doc => doc.data().status === "Approved").length,
-            dealerCommissions: {
-              paid: dealersSnapshot.docs.reduce((sum, dealer) => sum + (dealer.data().commissionPaid || 0), 0),
-              pending: dealersSnapshot.docs.reduce((sum, dealer) => sum + (dealer.data().commissionPending || 0), 0),
-            },
-            installerPerformance: {
-              completedProjects: installersSnapshot.docs.reduce(
-                (sum, installer) => sum + (installer.data().completedProjects || 0),
-                0
-              ),
-              issues: installersSnapshot.docs.reduce(
-                (sum, installer) => sum + (installer.data().issues || 0),
-                0
-              ),
-            },
+            completedOrders: ordersSnapshot.docs.filter(
+              (doc) => doc.data().status === "Completed"
+            ).length,
+            pendingOrders: ordersSnapshot.docs.filter(
+              (doc) => doc.data().status === "Pending"
+            ).length,
+            approvedOrders: ordersSnapshot.docs.filter(
+              (doc) => doc.data().status === "Approved"
+            ).length,
           };
           setReports(reportData);
         } catch (err) {
@@ -72,18 +81,35 @@ const AdminDashboard = () => {
     }
   }, [navigate]);
 
- 
-
   const handleApproveInstaller = async (installerId) => {
     try {
-      await updateDoc(doc(db, "installers", installerId), { status: "Approved" });
-      setInstallers(prev => prev.map(installer =>
-        installer.id === installerId ? { ...installer, status: "Approved" } : installer
-      ));
+      await updateDoc(doc(db, "users", installerId), { status: "Approved" });
+      setInstallers((prev) =>
+        prev.map((installer) =>
+          installer.id === installerId ? { ...installer, status: "Approved" } : installer
+        )
+      );
     } catch (err) {
       console.error("Error approving installer:", err);
     }
   };
+
+  // Calculate quotation stats
+  const calculateQuotationStats = () => {
+    const totalQuotations = quotations.length;
+    const approvedQuotations = quotations.filter((quotation) => quotation.status === "Approved").length;
+    const pendingQuotations = quotations.filter((quotation) => quotation.status === "Pending").length;
+    const totalEstimatedAmount = quotations.reduce((total, quotation) => total + (parseFloat(quotation.productName?.price || 0)), 0);
+
+    return {
+      totalQuotations,
+      approvedQuotations,
+      pendingQuotations,
+      totalEstimatedAmount,
+    };
+  };
+
+  const { totalQuotations, approvedQuotations, pendingQuotations, totalEstimatedAmount } = calculateQuotationStats();
 
   return (
     <div className="dashboard-container">
@@ -100,43 +126,22 @@ const AdminDashboard = () => {
           {/* Quotation and Order Management */}
           <div className="dashboard-section">
             <h3>Quotations and Orders</h3>
-            <div>
-              <h4>Quotations</h4>
-              {quotations.length > 0 ? (
-                quotations.map(quotation => (
-                  <div key={quotation.id}>
-                    <p><strong>Quotation ID:</strong> {quotation.id}</p>
-                    <p><strong>Status:</strong> {quotation.status}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No quotations found.</p>
-              )}
-
-              <h4>Orders</h4>
-              {orders.length > 0 ? (
-                orders.map(order => (
-                  <div key={order.id}>
-                    <p><strong>Order ID:</strong> {order.id}</p>
-                    <p><strong>Status:</strong> {order.status}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No orders found.</p>
-              )}
-            </div>
+            <p><strong>Total Quotations:</strong> {totalQuotations}</p>
+            <p><strong>Approved:</strong> {approvedQuotations}</p>
+            <p><strong>Pending:</strong> {pendingQuotations}</p>
+            <p><strong>Total Estimated Amount:</strong> ₹{totalEstimatedAmount.toFixed(2)}</p>
+           
           </div>
 
           {/* Dealer Management */}
           <div className="dashboard-section">
             <h3>Dealer Management</h3>
             {dealers.length > 0 ? (
-              dealers.map(dealer => (
-                <div key={dealer.id}>
+              dealers.map((dealer) => (
+                <div key={dealer.id} className="user-card">
                   <p><strong>Dealer Name:</strong> {dealer.name}</p>
-                  <p><strong>Level:</strong> {dealer.level}</p>
-                  <p><strong>Commission Paid:</strong> {dealer.commissionPaid || 0}</p>
-                  <p><strong>Commission Pending:</strong> {dealer.commissionPending || 0}</p>
+                  <p><strong>Email:</strong> {dealer.email}</p>
+                  <p><strong>Referral ID:</strong> {dealer.referralId}</p>
                 </div>
               ))
             ) : (
@@ -148,16 +153,11 @@ const AdminDashboard = () => {
           <div className="dashboard-section">
             <h3>Installer Management</h3>
             {installers.length > 0 ? (
-              installers.map(installer => (
-                <div key={installer.id}>
+              installers.map((installer) => (
+                <div key={installer.id} className="user-card">
                   <p><strong>Installer Name:</strong> {installer.name}</p>
-                  <p><strong>Status:</strong> {installer.status}</p>
-                  <button
-                    disabled={installer.status === "Approved"}
-                    onClick={() => handleApproveInstaller(installer.id)}
-                  >
-                    Approve
-                  </button>
+                  <p><strong>Email:</strong> {installer.email}</p>
+                  <p><strong>Referral ID:</strong> {installer.referralId}</p>
                 </div>
               ))
             ) : (
@@ -172,10 +172,6 @@ const AdminDashboard = () => {
             <p><strong>Completed Orders:</strong> {reports.completedOrders}</p>
             <p><strong>Pending Orders:</strong> {reports.pendingOrders}</p>
             <p><strong>Approved Orders:</strong> {reports.approvedOrders}</p>
-            <p><strong>Dealer Commissions (Paid):</strong> {reports.dealerCommissions.paid}</p>
-            <p><strong>Dealer Commissions (Pending):</strong> {reports.dealerCommissions.pending}</p>
-            <p><strong>Installer Performance (Completed Projects):</strong> {reports.installerPerformance.completedProjects}</p>
-            <p><strong>Installer Performance (Issues):</strong> {reports.installerPerformance.issues}</p>
           </div>
         </div>
       )}

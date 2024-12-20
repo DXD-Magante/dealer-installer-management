@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../services/firebase";
 import { signOut } from "firebase/auth";
-import { getDoc, doc, collection, getDocs, query, where } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
-import "../styles/components/DealerDashboard.css"
-
+import "../styles/components/DealerDashboard.css";
 
 const DealerDashboard = () => {
   const [dealerName, setDealerName] = useState("");
   const [orders, setOrders] = useState([]);
   const [earnings, setEarnings] = useState(0);
-  const [referralData, setReferralData] = useState({ referralId: "", totalReferrals: 0 });
+  const [referralData, setReferralData] = useState({
+    referralId: "",
+    totalReferrals: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,17 +38,25 @@ const DealerDashboard = () => {
             setDealerName(name);
             setEarnings(totalEarnings);
 
+            // Fetch orders based on userId
             const ordersQuery = query(
-              collection(db, "orders"),
-              where("dealerId", "==", auth.currentUser.uid)
+              collection(db, "Quotation_form"),
+              where("userId", "==", auth.currentUser.uid)
             );
             const ordersSnapshot = await getDocs(ordersQuery);
-            const ordersList = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const ordersList = ordersSnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            console.log("Fetched Orders:", ordersList); // Debugging log
             setOrders(ordersList);
 
-            const referralsSnapshot = await getDocs(collection(db, "referrals"));
+            // Fetch referral data
+            const referralsSnapshot = await getDocs(
+              collection(db, "referrals")
+            );
             const totalReferrals = referralsSnapshot.docs.filter(
-              ref => ref.data().referrerId === referralId
+              (ref) => ref.data().referrerId === referralId
             ).length;
             setReferralData({ referralId, totalReferrals });
           } else {
@@ -47,7 +64,9 @@ const DealerDashboard = () => {
           }
         } catch (err) {
           console.error("Error fetching data:", err);
-          setError("An error occurred while fetching data. Please try again later.");
+          setError(
+            "An error occurred while fetching data. Please try again later."
+          );
         } finally {
           setLoading(false);
         }
@@ -68,15 +87,33 @@ const DealerDashboard = () => {
 
   const OrderItem = ({ order }) => (
     <div className="order-item">
-      <p><strong>Order ID:</strong> {order.id || "N/A"}</p>
-      <p><strong>Status:</strong> {order.status || "Unknown"}</p>
-      <p><strong>Amount:</strong> ₹{order.amount || 0}</p>
+      <p>
+        <strong>Order ID:</strong>#{order.orderNumber || "N/A"}
+      </p>
+      <p>
+        <strong>Product:</strong>{order.product?.productName || "N/A"}
+      </p>
+      <p>
+        <strong>Status:</strong> {order.status || "Delivered to admin"}
+      </p>
+      <p>
+        <strong>Estimated Price:</strong> ₹{order.estimatePrice || 0}.00
+      </p>
+      <p>
+        <strong>Comission:</strong> ₹{order.commissionValue || 0}.00
+      </p>
+      <p>
+        <strong>Comission Percentage(%):</strong> {order.commissionPercentage || 0}%
+      </p>
+      <p>
+        <strong>Payment Status:</strong> {order.paymentStatus || 0}
+      </p>
     </div>
   );
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
+    <div className="dashboard-container1">
+      <div className="dashboard-header1">
         <h1>Dealer Dashboard</h1>
       </div>
       {loading ? (
@@ -88,11 +125,13 @@ const DealerDashboard = () => {
           <h2>Welcome, {dealerName}</h2>
 
           {/* My Orders Section */}
-          <div className="dashboard-section">
+          <div className="dashboard-section1">
             <h3>My Orders</h3>
-            <div className="container">
+            <div className="container1">
               {orders.length > 0 ? (
-                orders.map((order) => <OrderItem key={order.id} order={order} />)
+                orders.map((order) => (
+                  <OrderItem key={order.id} order={order} />
+                ))
               ) : (
                 <p>No orders found.</p>
               )}
@@ -100,19 +139,26 @@ const DealerDashboard = () => {
           </div>
 
           {/* Earnings Section */}
-          <div className="dashboard-section">
+          <div className="dashboard-section1">
             <h3>Earnings</h3>
-            <div className="container">
-              <p><strong>Total Earnings:</strong> ₹{earnings || 0}</p>
+            <div className="container1">
+              <p>
+                <strong>Total Earnings:</strong> ₹{earnings || 0}
+              </p>
             </div>
           </div>
 
           {/* Referrals Section */}
-          <div className="dashboard-section">
+          <div className="dashboard-section1">
             <h3>Referrals</h3>
-            <div className="container">
-              <p><strong>Referral ID:</strong> {referralData.referralId || "N/A"}</p>
-              <p><strong>Total Referrals:</strong> {referralData.totalReferrals || 0}</p>
+            <div className="container1">
+              <p>
+                <strong>Referral ID:</strong> {referralData.referralId || "N/A"}
+              </p>
+              <p>
+                <strong>Total Referrals:</strong>{" "}
+                {referralData.totalReferrals || 0}
+              </p>
             </div>
           </div>
         </div>

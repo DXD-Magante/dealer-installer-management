@@ -4,6 +4,7 @@ import { FaTrash } from "react-icons/fa";
 import products from "./Products.json";
 import { db, auth } from "../services/firebase";
 import { addDoc, collection, getFirestore, setDoc, doc } from "firebase/firestore"; // Firebase Firestore import
+import { useNavigate } from 'react-router-dom';
 
 const ProductPage = () => {
   const [filteredProducts, setFilteredProducts] = useState(products);
@@ -23,6 +24,8 @@ const ProductPage = () => {
   const [height, setHeight] = useState('');
   const [additionalReq, setAdditionalReq] = useState('');
   const itemsPerPage = 8; // Number of products per page
+ 
+  const navigate = useNavigate()
 
   const quotationRef = useRef(null); // Create a reference for the Quotation Summary section
 
@@ -168,13 +171,18 @@ const ProductPage = () => {
       <div className="product-list">
         {displayedProducts.map((product) => (
           <div key={product.id} className="product-card">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="product-image"
-            />
-            <h3>{product.name}</h3>
-            <p>{product.category}</p>
+             <div 
+        className="product-card-info"
+        onClick={() => navigate(`/product-details/${product.id}`)} // Navigate to product details
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          className="product-image"
+        />
+        <h3>{product.name}</h3>
+        <p>{product.category}</p>
+      </div>
             <button onClick={() => addToCart(product)}>Add to Quotation</button>
           </div>
         ))}

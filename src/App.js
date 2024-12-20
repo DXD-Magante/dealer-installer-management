@@ -12,6 +12,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import './App.css';
 import ProductPage from "./pages/ProductPage.js";
+import ProductDetailsPage from "./pages/ProductDetails.js";
+import OrdersPage from "./pages/Orders.js";
+import QuotationManagement from "./pages/Quotations.js";
 
 
 const Navbar = ({userRole, handleLogout}) => {
@@ -46,9 +49,10 @@ const Navbar = ({userRole, handleLogout}) => {
         {userRole === "Admin" && (
           <>
             <li className={`navbar-item ${isActive("/admin-dashboard") ? "active" : ""}`}><Link to="/admin-dashboard">Dashboard</Link></li>
-            <li className="navbar-item"><Link to="">Quotations</Link></li>
+            <li className="navbar-item"><Link to="/Quotation-management">Quotations</Link></li>
             <li className="navbar-item"><Link to="">Orders</Link></li>
             <li className="navbar-item"><Link to="">Products</Link></li>
+         
           </>
         )}
 
@@ -59,6 +63,7 @@ const Navbar = ({userRole, handleLogout}) => {
             <li className="navbar-item"><Link to="/referral">Referral</Link></li>
             <li className="navbar-item"><Link to="">Earnings</Link></li>
             <li className="navbar-item"><Link to="/products">Products</Link></li>
+            <li className="navbar-item"><Link to="/Orders">Orders</Link></li>
             <li className="navbar-item"><Link to="">Profile</Link></li>
           </>
         )}
@@ -165,6 +170,7 @@ function App() {
           <>
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/Quotation-management" element={<QuotationManagement/>}/>
           </>
         )}
         {userRole === "Dealer" && (
@@ -173,6 +179,8 @@ function App() {
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/referral" element={<ReferralPage/>}/>
             <Route path="/Products" element={<ProductPage/>}/>
+            <Route path="/product-details/:productId" element={<ProductDetailsPage />} />
+            <Route path="/Orders" element={<OrdersPage/>}/>
           </>
         )}
         {userRole === "Installer" && (
