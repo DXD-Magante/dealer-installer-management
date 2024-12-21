@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../services/firebase"; // Assuming Firebase setup is done
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, setDoc, addDoc } from "firebase/firestore";
 import "../styles/components/QuotationManagement.css";
 
 const QuotationManagement = () => {
@@ -102,6 +102,21 @@ const QuotationManagement = () => {
         paymentStatus,
       });
 
+      const quotation = quotations.find((q) => q.id === quotationId); // Find the updated quotation
+      const productName = quotation.product?.productName || "Unknown Product";
+      const orderNumber = quotation.orderNumber;
+      const userId = quotation.userId;
+  
+      await addDoc(collection(db, "Notification"), {
+        message: `Your Quotation #${orderNumber} for ${productName} has been approved.`,
+        createdAt: new Date(),
+        userId, // Assuming you want to associate the notification with the userId
+        orderNumber, // Store order number for reference
+        read: "false",
+        type:"alert"
+      });
+
+
       setQuotations((prev) =>
         prev.map((quotation) =>
           quotation.id === quotationId ? { ...quotation, status: "Approved", estimatePrice: Number(estimatePrice),
@@ -115,7 +130,7 @@ const QuotationManagement = () => {
 
     } catch (err) {
         console.error("Error approving quotation:", err);
-        alert("Error updating the quotation. Please check the console for details.");
+        alert(err);
       }
     };
 
@@ -123,6 +138,15 @@ const QuotationManagement = () => {
         try {
           await updateDoc(doc(db, "Quotation_form", quotationId), {
             status: "Rejected",
+          });
+
+          await addDoc(collection(db, "Notification"), {
+            message: `Your Quotation #${orderNumber} for ${productName} has been Rejected. Please rebiew and resubmit.`,
+            createdAt: new Date(),
+            userId, // Assuming you want to associate the notification with the userId
+            orderNumber, // Store order number for reference
+            read: "false",
+            type:"alert"
           });
     
           setQuotations((prev) =>
@@ -202,7 +226,7 @@ const QuotationManagement = () => {
                 <p><strong>Width:</strong> {quotation.product?.width} ft</p>
                 <p><strong>Postal Code:</strong> {quotation.postalCode}</p>
                 <p><strong>Phone:</strong> {quotation.clientPhone}</p>
-
+                <p><strong>User Id: </strong>{quotation.userId}</p>
                 <div className="quotation-actions">
                   <div className="estimate-price">
                     <label htmlFor={`estimate-price-${quotation.id}`} className="estimate-price-label">

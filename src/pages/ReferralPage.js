@@ -13,6 +13,8 @@ const ReferralPage = () => {
   const [rewardCount, setRewardCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showQRCodeModal, setShowQRCodeModal] = useState(false); // Modal visibility state
+  const [referralHistory, setReferralHistory] = useState([]);
+  const [error, setError] = useState("");
   const qrCodeRef = useRef(null);
 
   useEffect(() => {
@@ -30,31 +32,55 @@ const ReferralPage = () => {
       if (userSnapshot.exists()) {
         const userData = userSnapshot.data();
         setReferralId(userData.referralId || 'N/A');
-        fetchReferrals(userData.referralId);
       } else {
         console.error('No such document!');
       }
     } catch (error) {
       console.error('Error fetching referral ID:', error);
     }
-  };
-
-  const fetchReferrals = async (referralId) => {
-    try {
-      const referralsQuery = query(
-        collection(db, 'users'),
-        where('referredBy', '==', referralId)
-      );
-      const referralSnapshot = await getDocs(referralsQuery);
-      const referralsList = referralSnapshot.docs.map((doc) => doc.data());
-      setReferrals(referralsList);
-      setRewardCount(referralsList.length * 10); // Assuming each referral gives 10 points
-    } catch (error) {
-      console.error('Error fetching referrals:', error);
-    } finally {
-      setLoading(false);
+    finally{
+      setLoading(false)
     }
   };
+
+  const fetchReferralHistory = async () => {
+    setError("");
+    try {
+      const userId = auth.currentUser?.uid;
+      // Fetch the current user document to get the 'referrals' array
+      const userDoc = doc(db, "users", userId);
+      const userSnapshot = await getDoc(userDoc);
+
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        const referralIds = userData.referrals || []; // Get the referral IDs
+
+        if (referralIds.length > 0) {
+          // Query the 'users' collection to fetch details of all users who joined using this referral code
+          const q = query(collection(db, "users"), where("uid", "in", referralIds));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const referralUsers = querySnapshot.docs.map((doc) => doc.data());
+            setReferralHistory(referralUsers);
+          } else {
+            setReferralHistory([]);
+          }
+        } else {
+          setReferralHistory([]);
+        }
+      } else {
+        setError("User data not found.");
+      }
+    } catch (err) {
+      console.error("Error fetching referral history:", err);
+      setError("Error fetching referral history. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    fetchReferralHistory();
+  }, []);
 
   const copyToClipboard = () => {
     const link = `/signup?ref=${referralId}`;
@@ -74,7 +100,7 @@ const ReferralPage = () => {
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           title: 'Join us using my referral code!',
-          text: 'Use my referral code "${referralId}" to sign up and get started!',
+          text: `Use my referral code "${referralId}" to sign up and get started!`,
           files: [file],
         });
       } else {
@@ -121,24 +147,22 @@ const ReferralPage = () => {
             </button>
           </div>
 
-          <div className="rewards-container">
-            <h3>Total Rewards</h3>
-            <p>{rewardCount} Points</p>
-            <p>Invite more friends to earn more rewards!</p>
-          </div>
+          
 
           <div className="referrals-history">
             <h3>Referral History</h3>
-            {referrals.length > 0 ? (
-              <ul>
-                {referrals.map((referral, index) => (
-                  <li key={index}>
-                    {referral.name || 'Unknown User'} - {referral.email || 'Email not provided'}
+            {referralHistory.length === 0 ? (
+              <p>No users have joined using your referral code.</p>
+            ) : (
+              <ul className="referral-history-list">
+                {referralHistory.map((user, index) => (
+                  <li key={index} className="referral-history-item">
+                    <p><strong>Name:</strong> {user.name}</p>
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Role:</strong> {user.role}</p>
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p>No referrals yet. Start sharing your code!</p>
             )}
           </div>
 

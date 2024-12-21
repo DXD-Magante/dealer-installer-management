@@ -9,40 +9,36 @@ import ReferralPage from "./pages/ReferralPage.js";
 import { useEffect, useState } from "react";
 import { auth, db } from "./services/firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import './App.css';
 import ProductPage from "./pages/ProductPage.js";
 import ProductDetailsPage from "./pages/ProductDetails.js";
 import OrdersPage from "./pages/Orders.js";
 import QuotationManagement from "./pages/Quotations.js";
-
+import RewardsPage from "./pages/RewardPage.js";
 
 const Navbar = ({userRole, handleLogout}) => {
   const location = useLocation(); // Get the current location
   const isActive = (path) => location.pathname === path;
   const [unreadCount, setUnreadCount] = useState(0);
-  
 
   useEffect(() => {
-    const fetchUnreadNotifications = async () => {
-      if (auth.currentUser) {
-        try {
-          const notificationsQuery = query(
-            collection(db, "notifications"),
-            where("userId", "==", auth.currentUser.uid),
-            where("read", "==", false) // Only fetch unread notifications
-          );
-          const notificationsSnapshot = await getDocs(notificationsQuery);
-          setUnreadCount(notificationsSnapshot.docs.length);
-        } catch (err) {
-          console.error("Error fetching unread notifications:", err);
-        }
-      }
-    };
-
-    fetchUnreadNotifications();
-  }, []);
+    if (userRole) {
+      const notificationsQuery = query(
+        collection(db, "Notification"),
+        where("userId", "==", auth.currentUser?.uid),
+        where("read", "==", "false")
+      );
   
+      const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
+        setUnreadCount(snapshot.size); // Count unread notifications
+      });
+  
+      return () => unsubscribe(); // Cleanup on unmount
+    }
+  }, [userRole]);
+
+
   return(
     <nav className="navbar">
       <ul className="nav-list">
@@ -61,6 +57,7 @@ const Navbar = ({userRole, handleLogout}) => {
             <li className={`navbar-item ${isActive("/dealer-dashboard") ? "active" : ""}`}><Link to="/dealer-dashboard">Dashboard</Link></li>
             <li className="navbar-item"><Link to="">Quotations</Link></li>
             <li className="navbar-item"><Link to="/referral">Referral</Link></li>
+            <li className="navbar-item"><Link to="/reward">Rewards</Link></li>
             <li className="navbar-item"><Link to="">Earnings</Link></li>
             <li className="navbar-item"><Link to="/products">Products</Link></li>
             <li className="navbar-item"><Link to="/Orders">Orders</Link></li>
@@ -81,7 +78,9 @@ const Navbar = ({userRole, handleLogout}) => {
           <li className="navbar-item">
             <Link to="/notifications">
               <span className="notification-icon">🔔</span>
-              {unreadCount >= 0 && <span className="notification-badge">{unreadCount}</span>}
+              {unreadCount > 0 && (
+                  <span className="notification-badge">{unreadCount}</span>
+                )}
             </Link>
           </li>
         )}
@@ -181,6 +180,7 @@ function App() {
             <Route path="/Products" element={<ProductPage/>}/>
             <Route path="/product-details/:productId" element={<ProductDetailsPage />} />
             <Route path="/Orders" element={<OrdersPage/>}/>
+            <Route path="/reward" element={<RewardsPage/>}/>
           </>
         )}
         {userRole === "Installer" && (

@@ -41,6 +41,8 @@ const ProductPage = () => {
     setCurrentPage(1); // Reset to the first page on search
   };
 
+  
+
   const filterByCategory = (category) => {
     setFilteredProducts(
       category === "All"
@@ -99,6 +101,7 @@ const ProductPage = () => {
         height: height,
         width: width,
         additionalRequirements: additionalReq|| "",
+        status:"Pending"
       },
       userId: auth.currentUser?.uid || "Anonymous",
       orderNumber: Math.floor(100000 + Math.random() * 900000),
@@ -109,6 +112,16 @@ const ProductPage = () => {
       // Save to Firebase
       const quotationRef = collection(db, "Quotation_form");
       await setDoc(doc(quotationRef, String(dataToSubmit.orderNumber)), dataToSubmit);
+
+      const productName = cart.find((item) => item.id === productId)?.name || "Unknown"; // Retrieve product name
+      await addDoc(collection(db, "Notification"), {
+        message: `Your Quotation #${dataToSubmit.orderNumber} for ${productName} has been submitted to admin for review.`,
+        createdAt: new Date(),
+        userId: dataToSubmit.userId, // Ensure userId is referenced properly
+        orderNumber: dataToSubmit.orderNumber, // Store order number for reference
+        read: "false",
+        type:"alert"
+      });
   
       alert(`Quotation submitted successfully! Order Number: ${dataToSubmit.orderNumber}`);
     } catch (error) {
