@@ -13,6 +13,11 @@ const AdminDashboard = () => {
   const [reports, setReports] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [dealerSearch, setDealerSearch] = useState("");
+  const [installerSearch, setInstallerSearch] = useState("");
+  const [dealerPage, setDealerPage] = useState(1);
+  const [installerPage, setInstallerPage] = useState(1);
+  const itemsPerPage = 3;
   
   const navigate = useNavigate();
 
@@ -29,6 +34,8 @@ const AdminDashboard = () => {
             ...doc.data(),
           }));
           setQuotations(quotationsData);
+
+          
 
           // Fetch Orders
           const ordersSnapshot = await getDocs(collection(db, "orders"));
@@ -94,12 +101,39 @@ const AdminDashboard = () => {
     }
   };
 
+
+  // Filtering Logic
+  const filteredDealers = dealers.filter(
+    (dealer) =>
+      dealer.name.toLowerCase().includes(dealerSearch.toLowerCase()) ||
+      dealer.email.toLowerCase().includes(dealerSearch.toLowerCase())
+  );
+  const filteredInstallers = installers.filter(
+    (installer) =>
+      installer.name.toLowerCase().includes(installerSearch.toLowerCase()) ||
+      installer.email.toLowerCase().includes(installerSearch.toLowerCase())
+  );
+
+  // Pagination Logic
+  const paginatedDealers = filteredDealers.slice(
+    (dealerPage - 1) * itemsPerPage,
+    dealerPage * itemsPerPage
+  );
+  const paginatedInstallers = filteredInstallers.slice(
+    (installerPage - 1) * itemsPerPage,
+    installerPage * itemsPerPage
+  );
+
+  const handlePageChange = (setter, page) => {
+    setter(page);
+  };
+
   // Calculate quotation stats
   const calculateQuotationStats = () => {
     const totalQuotations = quotations.length;
     const approvedQuotations = quotations.filter((quotation) => quotation.status === "Approved").length;
-    const pendingQuotations = quotations.filter((quotation) => quotation.status === "Pending").length;
-    const totalEstimatedAmount = quotations.reduce((total, quotation) => total + (parseFloat(quotation.productName?.price || 0)), 0);
+    const pendingQuotations = quotations.filter((quotation) => quotation.product?.status === "Pending").length;
+    const totalEstimatedAmount = quotations.reduce((total, quotation) => total + (parseFloat(quotation.estimatePrice || 0)), 0);
 
     return {
       totalQuotations,
@@ -135,35 +169,97 @@ const AdminDashboard = () => {
 
           {/* Dealer Management */}
           <div className="dashboard-section">
-            <h3>Dealer Management</h3>
-            {dealers.length > 0 ? (
-              dealers.map((dealer) => (
-                <div key={dealer.id} className="user-card">
-                  <p><strong>Dealer Name:</strong> {dealer.name}</p>
-                  <p><strong>Email:</strong> {dealer.email}</p>
-                  <p><strong>Referral ID:</strong> {dealer.referralId}</p>
-                </div>
-              ))
-            ) : (
-              <p>No dealers found.</p>
-            )}
+        <h3>Dealer Management</h3>
+        <input
+          type="text"
+          placeholder="Search dealers..."
+          value={dealerSearch}
+          onChange={(e) => setDealerSearch(e.target.value)}
+        />
+        {paginatedDealers.map((dealer) => (
+          <div key={dealer.id} className="user-card">
+            <p><strong>Dealer Name:</strong> {dealer.name}</p>
+            <p><strong>Email:</strong> {dealer.email}</p>
+            <p><strong>Referral ID:</strong> {dealer.referralId}</p>
           </div>
+        ))}
+       <div className="pagination">
+  <button
+    onClick={() => handlePageChange(setDealerPage, dealerPage - 1)}
+    disabled={dealerPage === 1}
+    className="pagination-button"
+  >
+    Previous
+  </button>
+  {Array.from(
+    { length: Math.ceil(filteredDealers.length / itemsPerPage) },
+    (_, i) => (
+      <button
+        key={i}
+        onClick={() => handlePageChange(setDealerPage, i + 1)}
+        className={`pagination-button ${dealerPage === i + 1 ? "active" : ""}`}
+      >
+        {i + 1}
+      </button>
+    )
+  )}
+  <button
+    onClick={() => handlePageChange(setDealerPage, dealerPage + 1)}
+    disabled={dealerPage === Math.ceil(filteredDealers.length / itemsPerPage)}
+    className="pagination-button"
+  >
+    Next
+  </button>
+</div>
+
+      </div>
 
           {/* Installer Management */}
           <div className="dashboard-section">
-            <h3>Installer Management</h3>
-            {installers.length > 0 ? (
-              installers.map((installer) => (
-                <div key={installer.id} className="user-card">
-                  <p><strong>Installer Name:</strong> {installer.name}</p>
-                  <p><strong>Email:</strong> {installer.email}</p>
-                  <p><strong>Referral ID:</strong> {installer.referralId}</p>
-                </div>
-              ))
-            ) : (
-              <p>No installers found.</p>
-            )}
+        <h3>Installer Management</h3>
+        <input
+          type="text"
+          placeholder="Search installers..."
+          value={installerSearch}
+          onChange={(e) => setInstallerSearch(e.target.value)}
+        />
+        {paginatedInstallers.map((installer) => (
+          <div key={installer.id} className="user-card">
+            <p><strong>Installer Name:</strong> {installer.name}</p>
+            <p><strong>Email:</strong> {installer.email}</p>
+            <p><strong>Referral ID:</strong> {installer.referralId}</p>
           </div>
+        ))}
+        <div className="pagination">
+  <button
+    onClick={() => handlePageChange(setInstallerPage, installerPage - 1)}
+    disabled={installerPage === 1}
+    className="pagination-button"
+  >
+    Previous
+  </button>
+  {Array.from(
+    { length: Math.ceil(filteredInstallers.length / itemsPerPage) },
+    (_, i) => (
+      <button
+        key={i}
+        onClick={() => handlePageChange(setInstallerPage, i + 1)}
+        className={`pagination-button ${installerPage === i + 1 ? "active" : ""}`}
+      >
+        {i + 1}
+      </button>
+    )
+  )}
+  <button
+    onClick={() => handlePageChange(setInstallerPage, installerPage + 1)}
+    disabled={installerPage === Math.ceil(filteredInstallers.length / itemsPerPage)}
+    className="pagination-button"
+  >
+    Next
+  </button>
+</div>
+
+      </div>
 
           {/* Reports */}
           <div className="dashboard-section">

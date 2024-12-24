@@ -67,9 +67,18 @@ const QuotationManagement = () => {
           paymentStatus: doc.data().paymentStatus || "Pending", // Default payment status
           ...doc.data(),
         }));
-
-        setQuotations(quotationsData);
-        setAllQuotations(quotationsData); // Store the original list for resetting the search
+    
+        // Sort quotations: non-approved/rejected first, followed by approved/rejected
+        const sortedQuotations = quotationsData.sort((a, b) => {
+          const statusOrder = (status) => {
+            if (status === "Approved" || status === "Rejected") return 1; // Lower priority
+            return -1; // Higher priority
+          };
+          return statusOrder(a.status) - statusOrder(b.status);
+        });
+    
+        setQuotations(sortedQuotations);
+        setAllQuotations(sortedQuotations); // Store the original list for resetting the search
         setApprovedQuotations(JSON.parse(localStorage.getItem("approvedQuotations")) || []);
       } catch (err) {
         setError("Error fetching quotations");
@@ -78,6 +87,7 @@ const QuotationManagement = () => {
         setLoading(false);
       }
     };
+    
 
     fetchQuotations();
   }, []);

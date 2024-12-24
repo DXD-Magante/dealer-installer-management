@@ -284,6 +284,91 @@
     margin-top: 10px;
   }
 
+  /* General Feature Section Styling */
+.feature-section {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feature-section label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Input Styling */
+.feature-section input[type="text"] {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+/* Dropdown Styling */
+.feature-section select {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.feature-section select:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Checkbox Group Styling */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+
+/* Checkbox Input Styling */
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4caf50; /* Custom checkbox color */
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .feature-section {
+    gap: 5px;
+  }
+
+  .checkbox-group {
+    gap: 10px;
+  }
+
+  .feature-section label {
+    font-size: 14px;
+  }
+
+  .feature-section input[type="text"], 
+  .feature-section select {
+    font-size: 12px;
+  }
+}
+
+
   /* Pagination Container */
 .pagination {
     display: flex;

@@ -16,6 +16,10 @@ import ProductDetailsPage from "./pages/ProductDetails.js";
 import OrdersPage from "./pages/Orders.js";
 import QuotationManagement from "./pages/Quotations.js";
 import RewardsPage from "./pages/RewardPage.js";
+import ProjectPage from "./pages/ProjectPage.js";
+import AssignmentPage from "./pages/Assignment.js";
+import ProjectStatusPage from "./pages/ProjectStatusPage.js";
+import ProjectRequestPage from "./pages/projectRequestPage.js";
 
 const Navbar = ({userRole, handleLogout}) => {
   const location = useLocation(); // Get the current location
@@ -46,8 +50,8 @@ const Navbar = ({userRole, handleLogout}) => {
           <>
             <li className={`navbar-item ${isActive("/admin-dashboard") ? "active" : ""}`}><Link to="/admin-dashboard">Dashboard</Link></li>
             <li className="navbar-item"><Link to="/Quotation-management">Quotations</Link></li>
-            <li className="navbar-item"><Link to="">Orders</Link></li>
-            <li className="navbar-item"><Link to="">Products</Link></li>
+            <li className="navbar-item"><Link to="/project-request">Project Requests</Link></li>
+            <li className="navbar-item"><Link to="/products">Products</Link></li>
          
           </>
         )}
@@ -58,19 +62,18 @@ const Navbar = ({userRole, handleLogout}) => {
             <li className="navbar-item"><Link to="">Quotations</Link></li>
             <li className="navbar-item"><Link to="/referral">Referral</Link></li>
             <li className="navbar-item"><Link to="/reward">Rewards</Link></li>
-            <li className="navbar-item"><Link to="">Earnings</Link></li>
             <li className="navbar-item"><Link to="/products">Products</Link></li>
             <li className="navbar-item"><Link to="/Orders">Orders</Link></li>
-            <li className="navbar-item"><Link to="">Profile</Link></li>
+   
           </>
         )}
 
         {userRole === "Installer" && (
           <>
           <li className={`navbar-item ${isActive("/installer-dashboard") ? "active" : ""}`}><Link to="/installer-dashboard">Dashboard</Link></li>
-          <li className="navbar-item"><Link to="">Projects</Link></li>
-          <li className="navbar-item"><Link to="">Project Status</Link></li>
-          <li className="navbar-item"><Link to="">Profile</Link></li>
+          <li className="navbar-item"><Link to="/project">Projects</Link></li>
+          <li className="navbar-item"><Link to="/status">My Projects</Link></li>
+          <li className="navbar-item"><Link to="/assignment">Assignments</Link></li>
           </>
         )}
 
@@ -170,6 +173,9 @@ function App() {
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/Quotation-management" element={<QuotationManagement/>}/>
+            <Route path="/project-request" element={<ProjectRequestPage/>} />
+            <Route path="/products" element={<ProductPage/>} />
+            <Route path="/product-details/:productId" element={<ProductDetailsPage />} />
           </>
         )}
         {userRole === "Dealer" && (
@@ -187,6 +193,9 @@ function App() {
           <>
             <Route path="/installer-dashboard" element={<InstallerDashboard />} />
             <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/project" element={<ProjectPage/>} />
+            <Route path="/assignment" element={<AssignmentPage/>}/>
+            <Route path="/status" element={<ProjectStatusPage/>}/>
           </>
         )}
 

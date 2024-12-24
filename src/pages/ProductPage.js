@@ -3,7 +3,7 @@ import "../styles/components/ProductPage.css";
 import { FaTrash } from "react-icons/fa";
 import products from "./Products.json";
 import { db, auth } from "../services/firebase";
-import { addDoc, collection, getFirestore, setDoc, doc } from "firebase/firestore"; // Firebase Firestore import
+import { addDoc, collection, getFirestore, setDoc, doc, getDoc } from "firebase/firestore"; // Firebase Firestore import
 import { useNavigate } from 'react-router-dom';
 
 const ProductPage = () => {
@@ -69,26 +69,8 @@ const ProductPage = () => {
     });
   };
 
-  const handleFormChange = (productId, field, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [productId]: {
-        ...prevData[productId],
-        [field]: value,
-      },
-    }));
-  };
-
   const handleSubmitProductForm = async (productId) => {
-    const productData = formData[productId];
-    
-  
-    
-   
-  
-    // Ensure clientName is a string.
-    const formattedClientName = typeof clientName === 'string' ? clientName : clientName?.a;
-  
+    const productFeatures = formData[productId] || {};
     // Prepare data for Firebase
     const dataToSubmit = {
       clientName: clientName || "Unknown", // Ensure the clientName is always a string
@@ -98,17 +80,27 @@ const ProductPage = () => {
       postalCode: postalCode,
       product: {
         productName: cart.find((item) => item.id === productId)?.name || "Unknown",
+        category: cart.find((item) => item.id === productId)?.category || "Unknown",
         height: height,
         width: width,
+        features: productFeatures,
         additionalRequirements: additionalReq|| "",
-        status:"Pending"
       },
       userId: auth.currentUser?.uid || "Anonymous",
       orderNumber: Math.floor(100000 + Math.random() * 900000),
       timestamp: new Date().toISOString(),
+      status:"Pending"
     };
   
     try {
+
+      // Fetch username from the users collection
+    let username = "Anonymous";
+    if (auth.currentUser?.uid) {
+      const userDoc = await getDoc(doc(collection(db, "users"), auth.currentUser.uid));
+      username = userDoc.exists() ? userDoc.data().name || "Anonymous" : "Anonymous";
+    }
+
       // Save to Firebase
       const quotationRef = collection(db, "Quotation_form");
       await setDoc(doc(quotationRef, String(dataToSubmit.orderNumber)), dataToSubmit);
@@ -122,6 +114,19 @@ const ProductPage = () => {
         read: "false",
         type:"alert"
       });
+
+      const adminId = "4RdT9OAyUZVK7q5cy16yy71tVMl2";
+
+      await addDoc(collection(db, "Notification"), {
+        message: `A Quotation request for ${productName} with order number #${dataToSubmit.orderNumber} has beesn submitted by "${username}", and is now under review. Please review the request and take appropriate action.`,
+        createdAt: new Date(),
+        userId: adminId, // Ensure userId is referenced properly
+        orderNumber: dataToSubmit.orderNumber, // Store order number for reference
+        read: "false",
+        type:"alert"
+      });
+
+
   
       alert(`Quotation submitted successfully! Order Number: ${dataToSubmit.orderNumber}`);
     } catch (error) {
@@ -328,7 +333,7 @@ const ProductPage = () => {
 
             {/* Product Details Section */}
             <div className="form-section">
-              <h3>Product Details</h3>
+              <h3>Product Details & Features</h3>
 
               {/* Form for Active Product */}
               {cart.length > 0 && (
@@ -359,6 +364,77 @@ const ProductPage = () => {
                       }
                     />
                   </label>
+
+                  {Object.entries(cart[activeTab]?.features || {}).map(([featureKey, featureValues]) => {
+        if (featureKey === "dimensions") return null; // Skip dimensions
+
+        return (
+          <>
+          <div key={featureKey} className="feature-section">
+            <label>{featureKey.replace(/([A-Z])/g, " $1")}: </label>
+
+            {/* Handle single or multiple options */}
+            {Array.isArray(featureValues) && featureValues.length === 1 ? (
+        <input type="text" value={featureValues[0]} readOnly />
+      ) : Array.isArray(featureValues) ? (
+        featureKey === "operation" || featureKey === "accessories" || featureKey === "additionalFeatures" || featureKey === "additionalItems" ? (
+          <div className="checkbox-group">
+            {featureValues.map((option) => (
+              <label key={option}>
+                <input
+                  type="checkbox"
+                  value={option}
+                  checked={formData[cart[activeTab]?.id]?.[featureKey]?.includes(option) || false}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setFormData((prevData) => {
+                      const currentSelection = prevData[cart[activeTab]?.id]?.[featureKey] || [];
+                      const newSelection = checked
+                        ? [...currentSelection, option]
+                        : currentSelection.filter((item) => item !== option);
+
+                      return {
+                        ...prevData,
+                        [cart[activeTab]?.id]: {
+                          ...prevData[cart[activeTab]?.id],
+                          [featureKey]: newSelection,
+                        },
+                      };
+                    });
+                  }}
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        ) : (
+          <select
+            value={formData[cart[activeTab]?.id]?.[featureKey] || ""}
+            onChange={(e) =>
+              setFormData((prevData) => ({
+                ...prevData,
+                [cart[activeTab]?.id]: {
+                  ...prevData[cart[activeTab]?.id],
+                  [featureKey]: e.target.value,
+                },
+              }))
+            }
+          >
+            <option value="">Select an option</option>
+            {featureValues.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        )
+      ) : (
+        <input type="text" value={String(featureValues)} readOnly />
+      )}
+          </div>
+          </>
+        );
+      })}
                   <label>
                     Additional Requirements:
                     <textarea
