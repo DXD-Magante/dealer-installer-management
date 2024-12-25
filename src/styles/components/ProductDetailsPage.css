@@ -290,6 +290,57 @@ input[type="number"]:disabled {
   background-color: #e6f2ff;
 }
 
+/* Base styles for the checkbox */
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
+
+/* Hide the default checkbox */
+.custom-checkbox input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Custom checkbox appearance */
+.custom-checkbox span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 4px; /* Change to 50% for a circular checkbox */
+  transition: all 0.3s ease;
+}
+
+/* Add a checkmark when checked */
+.custom-checkbox input[type="checkbox"]:checked + span::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 7px;
+  width: 6px;
+  height: 10px;
+  border: solid #007bff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+
+/* Hover effect */
+.custom-checkbox span:hover {
+  background-color: #e6f7ff;
+  border-color: #007bff;
+}
+
+
 .popup {
   position: fixed;
   top: 0;

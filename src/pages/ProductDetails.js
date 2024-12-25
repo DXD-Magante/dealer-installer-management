@@ -339,6 +339,7 @@ const ProductDetailPage = () => {
           {featureValue.map((option) => (
             <label key={option} style={{ display: "block", marginBottom: "5px" }}>
               <input
+              className="custom-checkbox"
                 type="checkbox"
                 value={option}
                 checked={selectedFeatures[featureKey]?.includes(option) || false}
