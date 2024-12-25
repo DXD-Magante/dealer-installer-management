@@ -155,6 +155,9 @@ const ProjectsPage = () => {
 
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
 
+
+ 
+
   return (
     <div>
       <h1>Available Projects</h1>

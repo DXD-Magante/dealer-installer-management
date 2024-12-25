@@ -3,6 +3,7 @@
       "id": 1,
       "name": "Fenêtre PVC Classique",
       "category": "Windows",
+      "imageId": 1,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["PVC"],
@@ -16,6 +17,7 @@
       "id": 2,
       "name": "Fenêtre Aluminium Tilt & Turn",
       "category": "Windows",
+      "imageId": 2,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["Aluminium"],
@@ -29,6 +31,7 @@
     {
       "id": 3,
       "name": "Coulissant Aluminium (Sliding Window)",
+      "imageId": 3,
       "category": "Windows",
       "features": {
         "dimensions": ["Height", "Width"],
@@ -44,6 +47,7 @@
       "id": 4,
       "name": "Galandage Aluminium (Pocket Sliding Window)",
       "category": "Windows",
+      "imageId": 4,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["Aluminium"],
@@ -58,6 +62,7 @@
       "id": 5,
       "name": "Fenêtre Bois (Traditional Wooden Window)",
       "category": "Windows",
+      "imageId": 5,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["Wood"],
@@ -72,6 +77,7 @@
       "id": 6,
       "name": "Volet Roulant PVC (Rolling Shutter)",
       "category": "Shutters",
+      "imageId": 6,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["PVC"],
@@ -86,6 +92,7 @@
       "id": 7,
       "name": "Volet Roulant Aluminium (Rolling Shutter)",
       "category": "Shutters",
+      "imageId": 7,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["Aluminium"],
@@ -100,6 +107,7 @@
       "id": 8,
       "name": "Volet Battant Bois (Hinged Wooden Shutter)",
       "category": "Shutters",
+      "imageId": 8,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["Wood"],
@@ -113,6 +121,7 @@
     {
       "id": 9,
       "name": "Volet Battant Aluminium (Hinged Aluminium Shutter)",
+      "imageId": 9,
       "category": "Shutters",
       "features": {
         "dimensions": ["Height", "Width"],
@@ -129,6 +138,7 @@
       "id": 10,
       "name": "Volet Persiennes Aluminium (Louvered Shutter)",
       "category": "Shutters",
+      "imageId": 10,
       "features": {
         "dimensions": ["Height", "Width"],
         "material": ["Aluminium"],
@@ -145,6 +155,7 @@
           "id": 11,
           "name": "Portes d'Entrée Monobloc Aluminium",
           "category": "Portes d'Entrée (Entrance Doors)",
+          "imageId": 11,
           "features": {
             "dimensions": ["Height", "Width"],
             "material": ["Aluminium"],
@@ -160,6 +171,7 @@
           "id": 12,
           "name": "Portes d'Entrée Parclosees Aluminium",
           "category": "Portes d'Entrée (Entrance Doors)",
+          "imageId": 12,
           "features": {
             "dimensions": ["Height", "Width"],
             "material": ["Aluminium"],
@@ -175,6 +187,7 @@
           "id": 13,
           "name": "Portes d'Entrée Vitrées Aluminium",
           "category": "Portes d'Entrée (Entrance Doors)",
+          "imageId": 13,
           "features": {
             "dimensions": ["Height", "Width"],
             "material": ["Aluminium"],
@@ -190,6 +203,7 @@
           "id": 14,
           "name": "Portes d'Entrée Acier (Steel Doors)",
           "category": "Portes d'Entrée (Entrance Doors)",
+          "imageId": 14,
           "features": {
             "dimensions": ["Height", "Width"],
             "material": ["Steel"],
@@ -205,6 +219,7 @@
           "id": 15,
           "name": "Portes d'Entrée Parclosees PVC",
           "category": "Portes d'Entrée (Entrance Doors)",
+          "imageId": 15,
           "features": {
             "dimensions": ["Height", "Width"],
             "material": ["PVC"],
@@ -220,6 +235,7 @@
           "id": 16,
           "name": "Store Banne (Retractable Awning)",
           "category": "Stores & Pergolas (Awnings & Pergolas)",
+          "imageId": 16,
           "features": {
             "dimensions": ["Width", "Projection"],
             "material": {
@@ -242,6 +258,7 @@
           "id": 17,
           "name": "Store Intérieur (Interior Shade)",
           "category": "Stores & Pergolas (Awnings & Pergolas)",
+          "imageId": 17,
           "features": {
             "dimensions": ["Height", "Width"],
             "material": "Fabric",
@@ -261,6 +278,7 @@
           "id": 18,
           "name": "Pergola Aluminium (Aluminium Pergola)",
           "category": "Stores & Pergolas (Awnings & Pergolas)",
+          "imageId": 18,
           "features": {
             "dimensions": ["Length", "Width", "Height"],
             "material": "Aluminium Frame",
@@ -277,6 +295,7 @@
           "id": 19,
           "name": "Pergola Bioclimatique (Bioclimatic Pergola)",
           "category": "Stores & Pergolas (Awnings & Pergolas)",
+          "imageId": 19,
           "features": {
             "dimensions": ["Length", "Width", "Height"],
             "material": "Aluminium Frame with Integrated Blades",
@@ -292,6 +311,7 @@
           "id": 20,
           "name": "Store Vertical (Vertical Shade for Pergola)",
           "category": "Stores & Pergolas (Awnings & Pergolas)",
+          "imageId": 20,
           "features": {
             "dimensions": ["Height", "Width"],
             "material": "Fabric or PVC",
@@ -309,6 +329,7 @@
               "id": 21,
               "name": "Véranda Aluminium (Aluminium Veranda)",
               "category": "Vérandas",
+              "imageId": 21,
               "features": {
                 "dimensions": ["Length", "Width", "Height"],
                 "material": "Aluminium Frame",
@@ -326,6 +347,7 @@
               "id": 22,
               "name": "Véranda PVC (PVC Veranda)",
               "category": "Vérandas",
+              "imageId": 22,
               "features": {
                 "dimensions": ["Length", "Width", "Height"],
                 "material": "PVC Frame",
@@ -343,6 +365,7 @@
               "id": 23,
               "name": "Véranda Bois (Wooden Veranda)",
               "category": "Vérandas",
+              "imageId": 23,
               "features": {
                 "dimensions": ["Length", "Width", "Height"],
                 "material": "Wood Frame",
@@ -361,6 +384,7 @@
               "id": 24,
               "name": "Véranda Bioclimatique (Bioclimatic Veranda)",
               "category": "Vérandas",
+              "imageId": 24,
               "features": {
                 "dimensions": ["Length", "Width", "Height"],
                 "material": "Aluminium Frame with Adjustable Louvers",
@@ -378,6 +402,7 @@
               "id": 25,
               "name": "Portail Aluminium (Aluminium Gate)",
               "category": "Portails & Clôtures (Gates & Fences)",
+              "imageId": 25,
               "features": {
                 "dimensions": ["Height", "Width"],
                 "material": "Aluminium",
@@ -394,6 +419,7 @@
                   "id": 26,
                   "name": "Portail PVC (PVC Gate)",
                   "category": "Portails & Clôtures (Gates & Fences)",
+                  "imageId": 26,
                   "features": {
                     "dimensions": ["Height", "Width"],
                     "material": "PVC",
@@ -410,6 +436,7 @@
                   "id": 27,
                   "name": "Clôtures Aluminium (Aluminium Fence)",
                   "category": "Portails & Clôtures (Gates & Fences)",
+                  "imageId": 27,
                   "features": {
                     "dimensions": ["Height", "Length"],
                     "material": "Aluminium",
@@ -425,6 +452,7 @@
                   "id": 28,
                   "name": "Clôtures PVC (PVC Fence)",
                   "category": "Portails & Clôtures (Gates & Fences)",
+                  "imageId": 28,
                   "features": {
                     "dimensions": ["Height", "Length"],
                     "material": "PVC",
@@ -440,6 +468,7 @@
                   "id": 29,
                   "name": "Porte de Garage Sectionnelle (Sectional Garage Door)",
                   "category": "Portes de Garage (Garage Doors)",
+                  "imageId": 29,
                   "features": {
                     "dimensions": ["Height", "Width"],
                     "material": ["Steel", "Aluminium"],
@@ -456,6 +485,7 @@
                   "id": 30,
                   "name": "Porte de Garage Enroulable (Roller Garage Door)",
                   "category": "Portes de Garage (Garage Doors)",
+                  "imageId": 30,
                   "features": {
                     "dimensions": ["Height", "Width"],
                     "material": ["Aluminium", "Steel"],
@@ -472,6 +502,7 @@
                   "id": 31,
                   "name": "Porte de Garage Latérale (Side-Hinged Garage Door)",
                   "category": "Portes de Garage (Garage Doors)",
+                  "imageId": 31,
                   "features": {
                     "dimensions": ["Height", "Width"],
                     "material": ["Steel", "Aluminium"],
@@ -489,6 +520,7 @@
                   "id": 32,
                   "name": "Porte de Garage Basculante (Up-and-Over Garage Door)",
                   "category": "Portes de Garage (Garage Doors)",
+                  "imageId": 32,
                   "features": {
                     "dimensions": ["Height", "Width"],
                     "material": ["Steel", "Aluminium"],
@@ -505,6 +537,7 @@
                   "id": 33,
                   "name": "Motorisation (Gate Motors)",
                   "category": "Gate Motors",
+                  "imageId": 33,
                   "features": {
                     "compatibleGates": ["Swing Gate", "Sliding Gate"],
                     "powerSource": ["Solar-Powered", "Electric"],
@@ -520,6 +553,7 @@
                 "id": 34,
                 "name": "Garde Corps Aluminium (Aluminium Railings)",
                 "category": "Railings",
+                "imageId": 34,
                 "features": {
                   "dimensions": {
                     "height": "Numerical Input",

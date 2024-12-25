@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../services/firebase";
 import { signOut } from "firebase/auth";
-import { getDoc, doc, collection, getDocs, updateDoc, deleteDoc } from "firebase/firestore";
+import { getDoc, doc, collection, getDocs, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import "../styles/components/InstallerDashboard.css"; // Import the CSS file
@@ -18,6 +18,8 @@ const InstallerDashboard = () => {
   const [showStatusOptions, setShowStatusOptions] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [requestedProjects, setRequestedProjects] = useState([]);
+
 
   const navigate = useNavigate();
 
