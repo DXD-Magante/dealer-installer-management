@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { auth } from "../services/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, setDoc, collection } from "firebase/firestore";
 import { db } from "../services/firebase";
 import "../styles/components/login.css";
 
@@ -52,6 +52,16 @@ const Login = () => {
           setLoading(false);
           return;
         }
+
+        const loginTimestamp = new Date();
+        await setDoc(doc(collection(db, "activity_logs"), user.uid + "_" + loginTimestamp.getTime()), {
+          userId: user.uid,
+          email: user.email,
+          role: userRole,
+          action: "Login",
+          timestamp: loginTimestamp,
+          ip: window.location.hostname
+        });
 
         // Redirect based on role
         if (userRole === "Admin") navigate("/admin-dashboard");
