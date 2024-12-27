@@ -137,3 +137,12 @@
   border-width: 0px;
 
 }
+
+.Manage-orders{
+  background-color: #4a90e2;
+  padding: 10px;
+  border-radius: 15px;
+  color: #fff;
+  font-weight: bold;
+  border-width: 0px;
+}

@@ -311,6 +311,10 @@ const DealerDashboard = () => {
     ],
   };
 
+  const handleManageOrders = () => {
+    navigate('/manage-order'); // Redirect to the UserManagement page
+  };
+
   // Cleanup the chart when the component unmounts or data changes
   useEffect(() => {
     if (lineChartRef.current) {
@@ -346,6 +350,8 @@ const DealerDashboard = () => {
                   value={searchTerm}
                   onChange={handleSearch}
                 />
+
+                <button className="Manage-orders" onClick= {handleManageOrders}>Manage orders</button>
               </div>
               {currentOrders.length > 0 ? (
                 currentOrders.map((order) => <OrderItem key={order.id} order={order} />)

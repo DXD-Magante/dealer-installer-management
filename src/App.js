@@ -23,6 +23,7 @@ import ProjectRequestPage from "./pages/projectRequest.js";
 import UserManagementPage from "./pages/UserManagementPage.js";
 import UserManagementPage1 from "./pages/UserManagementPage1.js";
 import OrderDetails from "./pages/OrderDetailPage.js";
+import OrderManagement from "./pages/OrderManagement.js";
 
 const Navbar = ({userRole, handleLogout}) => {
   const location = useLocation(); // Get the current location
@@ -193,6 +194,7 @@ function App() {
             <Route path="/Orders" element={<OrdersPage/>}/>
             <Route path="/reward" element={<RewardsPage/>}/>
             <Route path="/order/:orderId" element={<OrderDetails />} />
+            <Route path="/manage-order" element = {<OrderManagement/>}/>
           </>
         )}
         {userRole === "Installer" && (
