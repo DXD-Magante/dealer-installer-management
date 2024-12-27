@@ -20,6 +20,9 @@ import ProjectPage from "./pages/ProjectPage.js";
 import AssignmentPage from "./pages/Assignment.js";
 import ProjectStatusPage from "./pages/ProjectStatusPage.js";
 import ProjectRequestPage from "./pages/projectRequest.js";
+import UserManagementPage from "./pages/UserManagementPage.js";
+import UserManagementPage1 from "./pages/UserManagementPage1.js";
+import OrderDetails from "./pages/OrderDetailPage.js";
 
 const Navbar = ({userRole, handleLogout}) => {
   const location = useLocation(); // Get the current location
@@ -176,6 +179,8 @@ function App() {
             <Route path="/project-request" element={<ProjectRequestPage/>} />
             <Route path="/products" element={<ProductPage/>} />
             <Route path="/product-details/:productId" element={<ProductDetailsPage />} />
+            <Route path="/manage" element={<UserManagementPage/>}/>
+            <Route path="/manage1" element={<UserManagementPage1/>}/>
           </>
         )}
         {userRole === "Dealer" && (
@@ -187,6 +192,7 @@ function App() {
             <Route path="/product-details/:productId" element={<ProductDetailsPage />} />
             <Route path="/Orders" element={<OrdersPage/>}/>
             <Route path="/reward" element={<RewardsPage/>}/>
+            <Route path="/order/:orderId" element={<OrderDetails />} />
           </>
         )}
         {userRole === "Installer" && (
@@ -196,6 +202,7 @@ function App() {
             <Route path="/project" element={<ProjectPage/>} />
             <Route path="/assignment" element={<AssignmentPage/>}/>
             <Route path="/status" element={<ProjectStatusPage/>}/>
+            
           </>
         )}
 

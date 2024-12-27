@@ -46,7 +46,7 @@ const DealerDashboard = () => {
   const [earnings, setEarnings] = useState(0);
   const [referralData, setReferralData] = useState({
     referralId: "",
-    totalReferrals: 0,
+    totalReferrals: '',
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -57,6 +57,11 @@ const DealerDashboard = () => {
   const [totalCommission, setTotalCommission] = useState(0);
   const lineChartRef = useRef(null);
   const pieChartRef = useRef(null);
+   const [referralHistory, setReferralHistory] = useState([]);
+   const [referralId, setReferralId] = useState('');
+   const [referralSearchTerm, setReferralSearchTerm] = useState("");
+   const [filteredReferralHistory, setFilteredReferralHistory] = useState([]);
+
 
   useEffect(() => {
     if (orders.length > 0) {
@@ -64,6 +69,25 @@ const DealerDashboard = () => {
       setTotalCommission(total);
     }
   }, [orders]);
+
+
+  const handleReferralSearch = (e) => {
+    const searchQuery = e.target.value.toLowerCase();
+    setReferralSearchTerm(searchQuery);
+    
+    const filtered = referralHistory.filter((referral) => {
+      const name = referral.name?.toLowerCase() || "";
+      const email = referral.email?.toLowerCase() || "";
+      return name.includes(searchQuery) || email.includes(searchQuery);
+    });
+  
+    setFilteredReferralHistory(filtered);
+  };
+
+  useEffect(() => {
+    setFilteredReferralHistory(referralHistory);
+  }, [referralHistory]);
+  
 
   const navigate = useNavigate();
 
@@ -75,10 +99,27 @@ const DealerDashboard = () => {
         try {
           const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
           if (userDoc.exists()) {
-            const { name, referralId, totalEarnings } = userDoc.data();
+            const { name, referralId, totalEarnings, status } = userDoc.data();
             setDealerName(name);
             setEarnings(totalEarnings);
-
+      
+            if (status === "Inactive" || status === "Blocked") {
+              alert(`Your account has been ${status}. Please contact support.`);
+              await signOut(auth);
+              navigate("/login");
+              return;
+            }
+      
+            // Fetch referrals from users collection
+            const referralsQuery = query(
+              collection(db, "users"),
+              where("referrerId", "==", referralId)
+            );
+            const referralsSnapshot = await getDocs(referralsQuery);
+            const totalReferrals = referralsSnapshot.size; // Number of matching documents
+      
+            setReferralData({ referralId, totalReferrals });
+      
             // Fetch orders
             const ordersQuery = query(
               collection(db, "Quotation_form"),
@@ -90,16 +131,7 @@ const DealerDashboard = () => {
               ...doc.data(),
             }));
             setOrders(ordersList);
-            setFilteredOrders(ordersList); // Initialize filtered orders
-
-            // Fetch referral data
-            const referralsSnapshot = await getDocs(
-              collection(db, "referrals")
-            );
-            const totalReferrals = referralsSnapshot.docs.filter(
-              (ref) => ref.data().referrerId === referralId
-            ).length;
-            setReferralData({ referralId, totalReferrals });
+            setFilteredOrders(ordersList);
           } else {
             setError("No user data found.");
           }
@@ -110,19 +142,76 @@ const DealerDashboard = () => {
           setLoading(false);
         }
       };
+      
 
       fetchDealerData();
     }
   }, [navigate]);
+  
+ useEffect(() => {
+    fetchReferralData();
+  }, []);
 
-  const handleLogout = async () => {
+  const fetchReferralData = async () => {
     try {
-      await signOut(auth);
-      navigate("/login");
-    } catch (err) {
-      console.error("Logout error:", err);
+      const userId = auth.currentUser?.uid;
+      if (!userId) throw new Error('User not authenticated');
+
+      const userDoc = doc(db, 'users', userId);
+      const userSnapshot = await getDoc(userDoc);
+
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        setReferralId(userData.referralId || 'N/A');
+      } else {
+        console.error('No such document!');
+      }
+    } catch (error) {
+      console.error('Error fetching referral ID:', error);
+    }
+    finally{
+      setLoading(false)
     }
   };
+
+  const fetchReferralHistory = async () => {
+    setError("");
+    try {
+      const userId = auth.currentUser?.uid;
+      // Fetch the current user document to get the 'referrals' array
+      const userDoc = doc(db, "users", userId);
+      const userSnapshot = await getDoc(userDoc);
+
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        const referralIds = userData.referrals || []; // Get the referral IDs
+
+        if (referralIds.length > 0) {
+          // Query the 'users' collection to fetch details of all users who joined using this referral code
+          const q = query(collection(db, "users"), where("uid", "in", referralIds));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const referralUsers = querySnapshot.docs.map((doc) => doc.data());
+            setReferralHistory(referralUsers);
+          } else {
+            setReferralHistory([]);
+          }
+        } else {
+          setReferralHistory([]);
+        }
+      } else {
+        setError("User data not found.");
+      }
+    } catch (err) {
+      console.error("Error fetching referral history:", err);
+      setError(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReferralHistory();
+  }, []);
 
   // Handle search
   const handleSearch = (e) => {
@@ -157,7 +246,7 @@ const DealerDashboard = () => {
   };
 
   const OrderItem = ({ order }) => (
-    <div className="order-item">
+    <div className="order-item" onClick={() => navigate(`/order/${order.id}`)}>
       <p>
         <strong>Order ID:</strong> #{order.orderNumber || "N/A"}
       </p>
@@ -296,16 +385,44 @@ const DealerDashboard = () => {
             </div>
           </div>
 
-          {/* Referrals Section */}
-          <div className="dashboard-section1">
-            <h3>Referrals</h3>
+          
+
             <div className="container1">
-              <p>
-                <strong>Referral ID:</strong> {referralData.referralId || "N/A"}
-              </p>
-              <p>
-                <strong>Total Referrals:</strong> {referralData.totalReferrals || 0}
-              </p>
+              {/* Referrals Section */}
+                <div className="dashboard-section1">
+                  <div className="refferal-header">
+                  <strong className="ref-h3">Referrals</strong>
+                  <p>
+                    <strong>Referral ID:</strong> {referralData.referralId || "N/A"}
+                  </p>
+                  <p><strong>All</strong>({referralHistory.length})</p> 
+                  </div>
+                  <div className="search-filter">
+                    <input
+                      type="text"
+                      placeholder="Search referrals..."
+                      value={referralSearchTerm}
+                      onChange={handleReferralSearch}
+                    />
+
+                    <button className="add-referral">Add Referral</button>
+                  </div>
+              
+
+
+              {filteredReferralHistory.length === 0 ? (
+              <p>No users have joined using your referral code.</p>
+            ) : (
+              <ul className="referral-history-list">
+                {referralHistory.map((user, index) => (
+                  <li key={index} className="referral-history-item">
+                    <p><strong>Name:</strong> {user.name}</p>
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Role:</strong> {user.role}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
             </div>
           </div>
 

@@ -151,6 +151,8 @@ const ReferralPage = () => {
 
           <div className="referrals-history">
             <h3>Referral History</h3>
+            <button>Add Referral</button>
+            <p><strong>Total Referrals:</strong> {referralHistory.length}</p> 
             {referralHistory.length === 0 ? (
               <p>No users have joined using your referral code.</p>
             ) : (

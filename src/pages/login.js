@@ -43,7 +43,10 @@ const Login = () => {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const userRole = userDoc.data().role; // Fetch role from Firestore
+        const userStatus = userDoc.data().status;
         console.log("User role from Firestore:", userRole);
+
+       
 
         // Check if the selected role matches the role in Firestore
         if (userRole !== selectedRole) {

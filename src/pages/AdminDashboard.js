@@ -34,10 +34,19 @@ const AdminDashboard = () => {
   const [updatedDetails, setUpdatedDetails] = useState({ name: "", phoneNumber: "", address: "", companyName: "" });
   const [selectedLogs, setSelectedLogs] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
+
   
   const itemsPerPage = 3;
+
+  const logPages = 7
   
+  const handleManageDealer = () => {
+    navigate('/manage'); // Redirect to the UserManagement page
+  };
   
+  const handleManageInstaller = () => {
+    navigate('/manage1'); // Redirect to the UserManagement page
+  };
   const navigate = useNavigate();
 
   const handleProfileClick = (user) => {
@@ -220,7 +229,7 @@ const handleActivityTypeChange = (e) => {
 // Pagination for Activity Logs
 const activityLogsToDisplay = filteredActivityLogs.slice(
   0,
-  itemsPerPage
+  logPages
 );
 
 
@@ -457,21 +466,21 @@ const activityLogsToDisplay = filteredActivityLogs.slice(
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+      <div className="Activity-logs-pagination">
         <button
           onClick={() => handlePageChange(setDealerPage, dealerPage - 1)}
           disabled={dealerPage === 1}
-          className="pagination-button"
+          className="Activity-logs-pagination-button"
         >
           Previous
         </button>
         {Array.from(
-          { length: Math.ceil(filteredActivityLogs.length / itemsPerPage) },
+          { length: Math.ceil(filteredActivityLogs.length / logPages) },
           (_, i) => (
             <button
               key={i}
               onClick={() => handlePageChange(setDealerPage, i + 1)}
-              className={`pagination-button ${dealerPage === i + 1 ? "active" : ""}`}
+              className={`Activity-logs-pagination-button ${dealerPage === i + 1 ? "active" : ""}`}
             >
               {i + 1}
             </button>
@@ -479,8 +488,8 @@ const activityLogsToDisplay = filteredActivityLogs.slice(
         )}
         <button
           onClick={() => handlePageChange(setDealerPage, dealerPage + 1)}
-          disabled={dealerPage === Math.ceil(filteredActivityLogs.length / itemsPerPage)}
-          className="pagination-button"
+          disabled={dealerPage === Math.ceil(filteredActivityLogs.length / logPages)}
+          className="Activity-logs-pagination-button"
         >
           Next
         </button>
@@ -505,6 +514,7 @@ const activityLogsToDisplay = filteredActivityLogs.slice(
 
           {/* Dealer Management */}
           <div className="dashboard-section">
+            <div className="dashboard-header">
             <h3>Dealer Management</h3>
             <input
               type="text"
@@ -512,6 +522,8 @@ const activityLogsToDisplay = filteredActivityLogs.slice(
               value={dealerSearch}
               onChange={(e) => setDealerSearch(e.target.value)}
             />
+            <button onClick={handleManageDealer}>Manage Dealer</button>
+            </div>
             {paginatedDealers.map((dealer) => (
               <div key={dealer.id} className="user-card" onClick={() => handleProfileClick(dealer)}>
                 <p><strong>Dealer Name:</strong> {dealer.name}</p>
@@ -552,6 +564,7 @@ const activityLogsToDisplay = filteredActivityLogs.slice(
 
           {/* Installer Management */}
           <div className="dashboard-section">
+            <div className="dashboard-header">
             <h3>Installer Management</h3>
             <input
               type="text"
@@ -559,6 +572,8 @@ const activityLogsToDisplay = filteredActivityLogs.slice(
               value={installerSearch}
               onChange={(e) => setInstallerSearch(e.target.value)}
             />
+            <button onClick={handleManageInstaller}>Manage Installer</button>
+            </div>
             {paginatedInstallers.map((installer) => (
               <div key={installer.id} className="user-card" onClick={() => handleProfileClick(installer)}>
                 <p><strong>Installer Name:</strong> {installer.name}</p>

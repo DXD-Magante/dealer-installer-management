@@ -8,6 +8,7 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
+import { CSVLink } from "react-csv";
 import "../styles/components/projectRequestPage.css"; // Add your styles here
 
 const ProjectRequestPage = () => {
@@ -102,6 +103,8 @@ const ProjectRequestPage = () => {
       setProjects(projectData);
     };
 
+    
+
     const fetchInstallers = async () => {
       const q = query(collection(db, "users"), where("role", "==", "Installer"));
       const querySnapshot = await getDocs(q);
@@ -155,6 +158,44 @@ const ProjectRequestPage = () => {
     }
   };
 
+
+  // Export CSV data
+  const headers = [
+    { label: "Order ID", key: "id" },
+    { label: "Client Name", key: "clientName" },
+    { label: "Client Phone", key: "clientPhone" },
+    { label: "Client City", key: "city" },
+    { label: "Project", key: "productName" },
+    { label: "Dealer Name", key: "dealerName" },
+    { label: "Dealer ID", key: "dealerId" },
+    { label: "Dealer Email", key: "dealerEmail" },
+    { label: "Installer Assigned", key: "assignedInstallerName" },
+    { label: "Installer Email", key: "assignedInstallerEmail" },
+    { label: "Deadline", key: "installationDeadline" },
+    { label: "Instructions", key: "installerInstructions" },
+    { label: "Product Features", key: "productFeatures" },
+    { label: "Installer Assigned?", key: "installerAssigned" },
+  ];
+  
+
+  const Csvdata = projects.map((project) => ({
+    id: project.id,
+    clientName: project.clientName,
+    clientPhone: project.clientPhone,
+    city: project.city,
+    productName: project.product?.productName,
+    dealerName: project.dealer?.name,
+    dealerId: project.dealer?.uid,
+    dealerEmail: project.dealer?.email,
+    assignedInstallerName: project.assignedInstallerName || "N/A",
+    assignedInstallerEmail: project.assignedInstallerEmail || "N/A",
+    installationDeadline: project.installationDeadline || "N/A",
+    installerInstructions: project.installerInstructions || "N/A",
+    productFeatures: project.product?.features ? Object.entries(project.product.features).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('; ') : "No features listed",
+    installerAssigned: project.Installer === "Assigned" ? "Yes" : "No",
+  }));
+  
+
   // Pagination Logic
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
@@ -200,6 +241,12 @@ const ProjectRequestPage = () => {
           {/* Add more statuses as needed */}
         </select>
         </div>
+
+        <div className="export-button">
+        <CSVLink data={Csvdata} headers={headers} filename="project_requests.csv">
+          <button>Export to CSV</button>
+        </CSVLink>
+      </div>
       </div>
 
 
@@ -215,6 +262,7 @@ const ProjectRequestPage = () => {
             <th>Installer Details</th>
             <th>Deadline</th>
             <th>Instructions</th>
+            <th>Acknowledgement</th>
 
           </tr>
         </thead>
@@ -299,8 +347,7 @@ const ProjectRequestPage = () => {
                   <button onClick={() => handleAddInstruction(project.id)}>Add Instruction</button>
                 )}
               </td>
-
-
+              <td>{project.installerAcknowledgement}</td>
             </tr>
           ))}
         </tbody>

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import products from "./Products.json";
 import "../styles/components/ProductDetailsPage.css";
 import { db, auth } from "../services/firebase";
 import { setDoc, doc, collection } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { gapi } from "gapi-script";
 import fenetrePvcStandard from "../assets/fenetre-pvc-standard.jpg"; // Fenêtre PVC Standard
 import FenêtreAluminiumTiltTurn from "../assets/Fenêtre Aluminium Tilt & Turn.jpg"; // Fenêtre Aluminium Tilt & Turn
 import AcousticGlassCoulissantAluminium from "../assets/CoulissantAluminium.jpg"; // Coulissant Aluminium (Sliding Window)
@@ -94,6 +95,7 @@ const ProductDetailPage = () => {
   const [width, setWidth] = useState("");
   const [additionalReq, setAdditionalReq] = useState("");
   const [selectedFeatures, setSelectedFeatures] = useState({});
+  const [gapiInitialized, setGapiInitialized] = useState(false);
 
   // File Upload States
   const [file, setFile] = useState(null);
@@ -125,6 +127,81 @@ const ProductDetailPage = () => {
     { id: "uv-protected", name: "UV-Protected Glass", img: img3 },
     { id: "uv-filtered", name: "UV-Filtered Glass", img: img2 },
   ];
+
+  const CLIENT_ID = "743175460976-g2iv8inaqrpj10g4elt0kmh3cjgmqfnv.apps.googleusercontent.com";
+  const API_KEY = "AIzaSyBdz9koMR5SPYZ5LUrUEgdy2NY55ADtTVE";
+  const SCOPES = "https://www.googleapis.com/auth/drive.file";
+
+
+  const initClient = () => {
+    gapi.load("client:auth2", () => {
+      gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        scope: SCOPES,
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+      }).then(() => {
+        setGapiInitialized(true);
+        console.log('Google API initialized successfully.');
+      }).catch(error => {
+        console.error('Google API initialization failed:', error);
+      });
+    });
+  };
+  
+  useEffect(() => {
+    initClient();
+  }, []);
+
+  const handleFileUploadToDrive = async (file) => {
+    if (!file) {
+      alert("Please select a file first!");
+      return;
+    }
+
+    const formData = new FormData();
+
+    const metadata = {
+      name: file.name,
+      mimeType: file.type,
+    };
+
+    formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+    formData.append("file", file);
+
+    try {
+      const response = await gapi.client.request({
+        path: "/upload/drive/v3/files",
+        method: "POST",
+        params: {
+          uploadType: "multipart",
+        },
+        headers: {
+          "Content-Type": "multipart/related",
+        },
+        body: formData,
+      });
+
+      // Log the response as a JSON string
+      console.log("File upload response:", JSON.stringify(response.result, null, 2));
+
+      const uploadedFileId = response.result.id;
+      console.log("File uploaded successfully:", uploadedFileId);
+
+      const fileUrl = `https://drive.google.com/file/d/${uploadedFileId}/view`;
+      setFileURL(fileUrl);
+
+      // Open the file in a new tab
+      window.open(fileUrl, "_blank");
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert(error);
+    }
+  };
+
+  
+  
+  
 
   const product = products.find((p) => p.id === parseInt(productId, 10));
 
@@ -166,26 +243,6 @@ const ProductDetailPage = () => {
   };
   
 
-
-  const handleFileUpload = async () => {
-    if (!file) {
-      alert("Please select a file before uploading.");
-      return;
-    }
-  
-    try {
-      const storage = getStorage();
-      const storageRef = ref(storage, `files/${file.name}`); // Ensure file.name exists
-      await uploadBytes(storageRef, file);
-      const fileURL = await getDownloadURL(storageRef); // Get the file URL after successful upload
-      setFileURL(fileURL); // Update state with file URL
-      alert("File uploaded successfully.");
-    } catch (error) {
-      console.error("File upload error:", error);
-      alert(error);
-    }
-  };
-  
 
   const handleSubmitQuotation = async () => {
     const orderNumber = Math.floor(100000 + Math.random() * 900000); // Random Order Number
@@ -520,11 +577,11 @@ const ProductDetailPage = () => {
             <div className="form-section">
               <h3>Upload Additional Details:</h3>
               <input
-                type="file"
-                accept=".jpg,.jpeg,.png,.pdf,.docx"
-                onChange={(e) => setFile(e.target.files[0])}
-              />
-              <button onClick={handleFileUpload}>Upload</button>
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.pdf,.docx"
+                  onChange={(e) => setFile(e.target.files[0])}
+                />
+              <button onClick={handleFileUploadToDrive}>Upload</button>
             </div>
             <div className="form-actions">
               <button
