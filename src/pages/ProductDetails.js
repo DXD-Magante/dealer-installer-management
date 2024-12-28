@@ -128,6 +128,11 @@ const ProductDetailPage = () => {
     { id: "uv-filtered", name: "UV-Filtered Glass", img: img2 },
   ];
 
+  const updatedFeatures = {
+    ...selectedFeatures,
+    glassType: selectedGlazing ||null,
+};
+
   const CLIENT_ID = "743175460976-g2iv8inaqrpj10g4elt0kmh3cjgmqfnv.apps.googleusercontent.com";
   const API_KEY = "AIzaSyBdz9koMR5SPYZ5LUrUEgdy2NY55ADtTVE";
   const SCOPES = "https://www.googleapis.com/auth/drive.file";
@@ -257,11 +262,12 @@ const ProductDetailPage = () => {
         productName: product.name,
         height,
         width,
+        features: updatedFeatures,
         additionalRequirements: additionalReq || "",
         glazingOption: selectedGlazing,
         uploadedFileURL: fileURL || null,
       },
-      features: selectedFeatures,
+      features: updatedFeatures,
       userId: auth.currentUser?.uid || "Anonymous",
       orderNumber,
       timestamp: new Date().toISOString(),

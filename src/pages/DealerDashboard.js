@@ -103,8 +103,13 @@ const DealerDashboard = () => {
             setDealerName(name);
             setEarnings(totalEarnings);
       
-            if (status === "Inactive" || status === "Blocked") {
-              alert(`Your account has been ${status}. Please contact support.`);
+            if (status === "Inactive") {
+              alert(`Your account haven't activated by admin yet. Please contact admin and try again later!.`);
+              await signOut(auth);
+              navigate("/login");
+              return;
+            } else if(status === "Blocked"){
+              alert(`Yoy account has been ${status} by the admin, Please contact admin`);
               await signOut(auth);
               navigate("/login");
               return;
