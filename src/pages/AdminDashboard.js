@@ -505,7 +505,7 @@ const handleLogsPageChange = (newPage) => {
         <div>
             {/* Quotation and Order Management */}
         <div className="dashboard-section">
-        <div className="dashboard-header">
+        <div className="admin-dashboard-header">
           <h3>Quotations and Orders</h3>
           <button onClick={HandleManageQuotations} className="admin-dashboard-button">Manage Quotations</button>
           </div>
@@ -594,7 +594,7 @@ const handleLogsPageChange = (newPage) => {
 
            {/* Activity Logs Section - Moved below Quotations */}
         <div className="dashboard-section">
-          <div className="dashboard-header">
+          <div className="admin-dashboard-header">
           <h3>Activity</h3>
 
           {/* Search Input */}
@@ -764,7 +764,7 @@ const handleLogsPageChange = (newPage) => {
 
           {/* Dealer Management */}
           <div className="dashboard-section">
-            <div className="dashboard-header">
+            <div className="admin-dashboard-header">
             <h3>Dealer Management</h3>
             <input
               type="text"
@@ -819,7 +819,7 @@ const handleLogsPageChange = (newPage) => {
 
           {/* Installer Management */}
           <div className="dashboard-section">
-            <div className="dashboard-header">
+            <div className="admin-dashboard-header">
             <h3>Installer Management</h3>
             <input
               type="text"

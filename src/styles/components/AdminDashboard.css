@@ -11,11 +11,11 @@
 
 /* Dashboard Container */
 .dashboard-container {
-  font-family: "Roboto", sans-serif;
+  margin: 20px 0;
   padding: 20px;
-  background-color: var(--background-light);
-  color: var(--text-dark);
-  min-height: 100vh;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+  box-shadow: 4px 4px 10px #d1d1d1, -4px -4px 10px #ffffff;
 }
 
 /* General Section Styling */
@@ -37,9 +37,9 @@
 }
 
 /* Dashboard Header */
-.dashboard-header {
+.admin-dashboard-header {
   text-align: center;
-  padding: 30px;
+  padding: 20px;
   background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
   color: var(--text-light);
   border-radius: 8px;
@@ -47,9 +47,13 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 -4px 15px rgba(255, 255, 255, 0.1);
   position: relative;
   transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
 }
 
-.dashboard-header h1 {
+.admin-dashboard-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
@@ -59,11 +63,11 @@
   transition: color 0.3s ease;
 }
 
-.dashboard-header:hover {
+.admin-dashboard-header:hover {
   background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
 }
 
-.dashboard-header h1::after {
+.admin-dashboard-header h1::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -74,7 +78,7 @@
   transition: width 0.3s ease;
 }
 
-.dashboard-header h1:hover::after {
+.admin-dashboard-header h1:hover::after {
   width: 100%;
 }
 
@@ -323,14 +327,15 @@ input[type="text"]:focus {
 
   background: linear-gradient(135deg, #FF8C42, #D95D39, #8C3F4D);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #fff;
-  padding: 10px 20px;
+  padding: 10px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  height: 50px;
 
 }
 

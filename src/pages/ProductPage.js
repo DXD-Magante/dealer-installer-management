@@ -96,6 +96,7 @@ const ProductPage = () => {
   const [width, setWidth] = useState('');
   const [height, setHeight] = useState('');
   const [additionalReq, setAdditionalReq] = useState('');
+  const [productscount, setProductscount] = useState([]);
   const itemsPerPage = 8; // Number of products per page
  
   const navigate = useNavigate()
